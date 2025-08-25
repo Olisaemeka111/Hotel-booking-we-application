@@ -1,0 +1,663 @@
+# Technical Documentation - Modern Seaside Stay
+
+## Table of Contents
+1. [Architecture Overview](#architecture-overview)
+2. [Technology Stack](#technology-stack)
+3. [Project Structure](#project-structure)
+4. [Component Architecture](#component-architecture)
+5. [State Management](#state-management)
+6. [Routing System](#routing-system)
+7. [Form Handling & Validation](#form-handling--validation)
+8. [Styling System](#styling-system)
+9. [Internationalization](#internationalization)
+10. [API Integration](#api-integration)
+11. [Performance Optimization](#performance-optimization)
+12. [Security Considerations](#security-considerations)
+13. [Testing Strategy](#testing-strategy)
+14. [Deployment Guide](#deployment-guide)
+15. [Development Workflow](#development-workflow)
+16. [Troubleshooting](#troubleshooting)
+
+## Architecture Overview
+
+### Application Architecture
+The Modern Seaside Stay application follows a **Component-Based Architecture** with the following layers:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                       │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Pages     │ │ Components  │ │   Layouts   │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Business Logic Layer                     │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │   Hooks     │ │  Contexts   │ │  Services   │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Data Layer                               │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
+│  │ React Query │ │ Local State │ │   Storage   │          │
+│  └─────────────┘ └─────────────┘ └─────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Design Patterns
+- **Container/Presentational Pattern**: Separation of logic and presentation
+- **Custom Hooks Pattern**: Reusable business logic
+- **Context Pattern**: Global state management
+- **Compound Components**: Flexible component composition
+
+## Technology Stack
+
+### Core Technologies
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.3.1 | UI Framework |
+| TypeScript | 5.5.3 | Type Safety |
+| Vite | 5.4.1 | Build Tool & Dev Server |
+
+### UI & Styling
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Tailwind CSS | 3.4.11 | Utility-first CSS |
+| shadcn/ui | Latest | Component Library |
+| Radix UI | Various | Headless UI Primitives |
+| Lucide React | 0.462.0 | Icon Library |
+
+### State Management & Data
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React Query | 5.56.2 | Server State Management |
+| React Hook Form | 7.53.0 | Form Management |
+| Zod | 3.23.8 | Schema Validation |
+
+### Routing & Navigation
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React Router DOM | 6.26.2 | Client-side Routing |
+
+### Development Tools
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| ESLint | 9.9.0 | Code Linting |
+| TypeScript ESLint | 8.0.1 | TypeScript Linting |
+| PostCSS | 8.4.47 | CSS Processing |
+| Autoprefixer | 10.4.20 | CSS Vendor Prefixing |
+
+## Project Structure
+
+```
+modern-seaside-stay-5005/
+├── public/                    # Static assets
+│   ├── images/               # Image assets
+│   └── favicon.ico           # Favicon
+├── src/
+│   ├── components/           # Reusable UI components
+│   │   ├── ui/              # shadcn/ui components
+│   │   ├── layout/          # Layout components
+│   │   └── forms/           # Form components
+│   ├── contexts/            # React contexts
+│   │   └── LanguageContext.tsx
+│   ├── hooks/               # Custom React hooks
+│   │   ├── useBooking.ts
+│   │   ├── useLocalStorage.ts
+│   │   └── useTheme.ts
+│   ├── lib/                 # Utility functions
+│   │   ├── utils.ts         # General utilities
+│   │   ├── validations.ts   # Zod schemas
+│   │   └── constants.ts     # Application constants
+│   ├── locales/             # Internationalization
+│   │   ├── en.json
+│   │   └── es.json
+│   ├── pages/               # Page components
+│   │   ├── Index.tsx        # Home page
+│   │   ├── Apartments.tsx   # Apartment listings
+│   │   ├── BookingPage.tsx  # Booking form
+│   │   ├── Gallery.tsx      # Photo gallery
+│   │   ├── Contact.tsx      # Contact form
+│   │   ├── Amenities.tsx    # Hotel amenities
+│   │   └── NotFound.tsx     # 404 page
+│   ├── App.tsx              # Main application component
+│   ├── main.tsx             # Application entry point
+│   ├── index.css            # Global styles
+│   └── vite-env.d.ts        # Vite type definitions
+├── .eslintrc.js             # ESLint configuration
+├── tailwind.config.ts       # Tailwind CSS configuration
+├── tsconfig.json            # TypeScript configuration
+├── vite.config.ts           # Vite configuration
+├── package.json             # Dependencies and scripts
+└── README.md                # Project documentation
+```
+
+## Component Architecture
+
+### Component Hierarchy
+```
+App
+├── QueryClientProvider
+├── TooltipProvider
+├── LanguageProvider
+├── Toaster
+├── Sonner
+└── BrowserRouter
+    └── Routes
+        ├── Index
+        ├── Apartments
+        ├── BookingPage
+        ├── Gallery
+        ├── Contact
+        ├── Amenities
+        └── NotFound
+```
+
+### Component Categories
+
+#### 1. Layout Components
+- **Header**: Navigation and branding
+- **Footer**: Links and contact information
+- **Sidebar**: Mobile navigation menu
+- **Container**: Content wrapper with responsive padding
+
+#### 2. UI Components (shadcn/ui)
+- **Button**: Primary, secondary, and ghost variants
+- **Input**: Text, email, and number inputs
+- **Card**: Content containers with shadows
+- **Dialog**: Modal dialogs and overlays
+- **Form**: Form components with validation
+- **Toast**: Notification system
+
+#### 3. Page Components
+- **Index**: Landing page with hero section
+- **Apartments**: Apartment listings with filters
+- **BookingPage**: Multi-step booking form
+- **Gallery**: Image gallery with lightbox
+- **Contact**: Contact form with validation
+- **Amenities**: Hotel facilities showcase
+
+## State Management
+
+### Global State (React Context)
+```typescript
+// LanguageContext.tsx
+interface LanguageContextType {
+  language: string;
+  setLanguage: (lang: string) => void;
+  t: (key: string) => string;
+}
+```
+
+### Server State (React Query)
+```typescript
+// Query configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+```
+
+### Local State (useState/useReducer)
+- Form state management
+- UI state (modals, dropdowns, etc.)
+- Component-specific state
+
+## Routing System
+
+### Route Configuration
+```typescript
+<Routes>
+  <Route path="/" element={<Index />} />
+  <Route path="/apartments" element={<Apartments />} />
+  <Route path="/booking" element={<BookingPage />} />
+  <Route path="/gallery" element={<Gallery />} />
+  <Route path="/contact" element={<Contact />} />
+  <Route path="/amenities" element={<Amenities />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
+
+### Navigation Features
+- **Programmatic Navigation**: `useNavigate` hook
+- **Link Components**: `Link` and `NavLink`
+- **Route Parameters**: Dynamic routing support
+- **404 Handling**: Custom NotFound page
+
+## Form Handling & Validation
+
+### Form Schema (Zod)
+```typescript
+const bookingSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  checkIn: z.date().min(new Date(), "Check-in date must be in the future"),
+  checkOut: z.date().min(new Date(), "Check-out date must be in the future"),
+  guests: z.number().min(1).max(10, "Maximum 10 guests allowed"),
+  apartmentType: z.enum(["standard", "deluxe", "suite"]),
+});
+```
+
+### Form Implementation
+```typescript
+const form = useForm<BookingFormData>({
+  resolver: zodResolver(bookingSchema),
+  defaultValues: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    guests: 1,
+    apartmentType: "standard",
+  },
+});
+```
+
+### Validation Features
+- **Real-time Validation**: Instant feedback on input
+- **Custom Error Messages**: Localized error messages
+- **Field-level Validation**: Individual field validation
+- **Form-level Validation**: Cross-field validation
+
+## Styling System
+
+### Tailwind CSS Configuration
+```typescript
+// tailwind.config.ts
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: "#f0f9ff",
+          500: "#3b82f6",
+          900: "#1e3a8a",
+        },
+        secondary: {
+          50: "#f8fafc",
+          500: "#64748b",
+          900: "#0f172a",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+      },
+      spacing: {
+        "18": "4.5rem",
+        "88": "22rem",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+};
+```
+
+### CSS Architecture
+- **Utility-First**: Tailwind utility classes
+- **Component Classes**: Custom component styles
+- **Responsive Design**: Mobile-first approach
+- **Dark Mode**: Theme switching support
+
+### Design System
+- **Color Palette**: Primary, secondary, and accent colors
+- **Typography**: Font families and sizing scale
+- **Spacing**: Consistent spacing scale
+- **Shadows**: Elevation system
+- **Border Radius**: Consistent corner radius
+
+## Internationalization
+
+### Translation Structure
+```json
+{
+  "common": {
+    "bookNow": "Book Now",
+    "learnMore": "Learn More",
+    "contactUs": "Contact Us"
+  },
+  "booking": {
+    "title": "Book Your Stay",
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address"
+    }
+  }
+}
+```
+
+### Implementation
+```typescript
+// LanguageContext.tsx
+const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState("en");
+  const translations = useMemo(() => getTranslations(language), [language]);
+  
+  const t = useCallback((key: string) => {
+    return getNestedValue(translations, key) || key;
+  }, [translations]);
+  
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+```
+
+## API Integration
+
+### API Client Setup
+```typescript
+// lib/api.ts
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+
+export const apiClient = {
+  async get<T>(endpoint: string): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  },
+  
+  async post<T>(endpoint: string, data: any): Promise<T> {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    return response.json();
+  },
+};
+```
+
+### React Query Hooks
+```typescript
+// hooks/useApartments.ts
+export const useApartments = () => {
+  return useQuery({
+    queryKey: ["apartments"],
+    queryFn: () => apiClient.get<Apartment[]>("/apartments"),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useCreateBooking = () => {
+  return useMutation({
+    mutationFn: (bookingData: BookingFormData) =>
+      apiClient.post<Booking>("/bookings", bookingData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["apartments"] });
+    },
+  });
+};
+```
+
+## Performance Optimization
+
+### Code Splitting
+```typescript
+// Lazy loading for pages
+const Apartments = lazy(() => import("./pages/Apartments"));
+const BookingPage = lazy(() => import("./pages/BookingPage"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+
+// Suspense wrapper
+<Suspense fallback={<LoadingSpinner />}>
+  <Routes>
+    <Route path="/apartments" element={<Apartments />} />
+  </Routes>
+</Suspense>
+```
+
+### Image Optimization
+- **WebP Format**: Modern image format support
+- **Responsive Images**: Different sizes for different devices
+- **Lazy Loading**: Images load as they enter viewport
+- **Progressive Loading**: Blur-up technique
+
+### Bundle Optimization
+- **Tree Shaking**: Unused code elimination
+- **Minification**: Code compression
+- **Gzip Compression**: HTTP compression
+- **CDN Integration**: Content delivery network
+
+### Caching Strategy
+- **Browser Caching**: Static assets caching
+- **Service Worker**: Offline functionality
+- **React Query Caching**: Server state caching
+- **Local Storage**: User preferences caching
+
+## Security Considerations
+
+### Input Validation
+- **Client-side Validation**: Zod schema validation
+- **Server-side Validation**: API endpoint validation
+- **XSS Prevention**: Content sanitization
+- **CSRF Protection**: Cross-site request forgery prevention
+
+### Authentication & Authorization
+- **JWT Tokens**: Secure token-based authentication
+- **Role-based Access**: User permission system
+- **Session Management**: Secure session handling
+- **Password Security**: Strong password requirements
+
+### Data Protection
+- **HTTPS Only**: Secure communication
+- **Data Encryption**: Sensitive data encryption
+- **Privacy Compliance**: GDPR compliance
+- **Secure Headers**: Security headers implementation
+
+## Testing Strategy
+
+### Testing Pyramid
+```
+    E2E Tests (Few)
+       /    \
+      /      \
+   Integration Tests (Some)
+      /    \
+     /      \
+  Unit Tests (Many)
+```
+
+### Unit Testing
+```typescript
+// components/__tests__/Button.test.tsx
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Button } from "../Button";
+
+describe("Button", () => {
+  it("renders with correct text", () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText("Click me")).toBeInTheDocument();
+  });
+  
+  it("calls onClick when clicked", () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+    fireEvent.click(screen.getByText("Click me"));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+### Integration Testing
+- **Component Integration**: Component interaction testing
+- **API Integration**: Backend integration testing
+- **Form Testing**: Form submission and validation testing
+
+### E2E Testing
+- **User Journey Testing**: Complete user flow testing
+- **Cross-browser Testing**: Multiple browser compatibility
+- **Performance Testing**: Load time and responsiveness testing
+
+## Deployment Guide
+
+### Build Process
+```bash
+# Install dependencies
+npm install
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Environment Configuration
+```env
+# .env.production
+VITE_API_URL=https://api.modernseasidestay.com
+VITE_APP_TITLE=Modern Seaside Stay
+VITE_GA_TRACKING_ID=GA_MEASUREMENT_ID
+```
+
+### Deployment Platforms
+
+#### Netlify
+```toml
+# netlify.toml
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+#### Vercel
+```json
+// vercel.json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+#### GitHub Pages
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+```
+
+## Development Workflow
+
+### Git Workflow
+```bash
+# Feature development
+git checkout -b feature/new-feature
+# Make changes
+git add .
+git commit -m "feat: add new feature"
+git push origin feature/new-feature
+# Create pull request
+```
+
+### Code Quality
+- **ESLint**: Code linting and formatting
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for pre-commit checks
+- **Commitlint**: Conventional commit messages
+
+### Development Commands
+```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run linting
+npm run lint
+
+# Run type checking
+npm run type-check
+
+# Run tests
+npm run test
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Build Errors
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Clear Vite cache
+rm -rf node_modules/.vite
+```
+
+#### TypeScript Errors
+```bash
+# Check TypeScript configuration
+npx tsc --noEmit
+
+# Update type definitions
+npm install @types/react @types/react-dom
+```
+
+#### Styling Issues
+```bash
+# Rebuild Tailwind CSS
+npx tailwindcss -i ./src/index.css -o ./dist/output.css --watch
+
+# Check PostCSS configuration
+npx postcss --config postcss.config.js
+```
+
+### Performance Issues
+- **Bundle Size**: Use `npm run build -- --analyze` to analyze bundle
+- **Memory Leaks**: Check for unmounted component cleanup
+- **Network Requests**: Optimize API calls with React Query
+
+### Browser Compatibility
+- **Polyfills**: Add necessary polyfills for older browsers
+- **Feature Detection**: Check for feature support before usage
+- **Fallbacks**: Provide fallbacks for unsupported features
+
+---
+
+**Last Updated**: January 2025  
+**Version**: 1.0.0  
+**Maintainer**: Development Team
